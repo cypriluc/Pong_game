@@ -21,8 +21,9 @@ pressed_keys = set()    # set of pressed keys
 score = [0, 0]
 
 import pyglet
+from pyglet import gl
 
-def draw_rectangle(x1, y1, x2, y2):
+def create_rectangle(x1, y1, x2, y2):
     "Draw a rectangle in given coordinates"
     gl.glBegin(gl.GL_TRIANGLE_FAN)   # draw connected triangles
     gl.glVertex2f(int(x1), int(y1))  # vertex A
@@ -32,6 +33,19 @@ def draw_rectangle(x1, y1, x2, y2):
     # next coordinate E would draw CDE triangle and so on
     gl.glEnd()  # end drawing rectangles
 
-window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
-pyglet.app.run()
+def draw():
+    "Draw game status"
+    gl.glClear(gl.GL_COLOR_BUFFER_BIT)  # delete window content, black background
+    gl.glColor3f(1, 1, 1)  # set drawing color to white
+    create_rectangle(
+        ball_position[0] - BALL_SIZE // 2, 
+        ball_position[1] - BALL_SIZE // 2,  
+        ball_position[0] + BALL_SIZE // 2,
+        ball_position[1] + BALL_SIZE // 2,
+    )
 
+window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
+window.push_handlers(
+    on_draw=draw,  # to draw the window use the function 'draw'
+)
+pyglet.app.run()  # everything set to start the game
