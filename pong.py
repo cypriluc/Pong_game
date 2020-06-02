@@ -110,6 +110,7 @@ def release_key(symbol, modificator):
         pressed_keys.discard(('down', 1))
 
 def restore(dt):
+    "moving bats, ball, not escaping the field"
     for bat_number in (0, 1):
         # move according keys
         if ('up', bat_number) in pressed_keys:
@@ -122,7 +123,47 @@ def restore(dt):
         # top limit
         if bat_position[bat_number] > HEIGHT - BAT_LENGTH /2:
             bat_position[bat_number] = HEIGHT - BAT_LENGTH / 2
+    # move the ball
+    ball_position[0] += ball_speed[0] * dt
+    ball_position[1] += ball_speed[1] * dt
+    # bounce the ball from wall
+    if ball_position[1] < BALL_SIZE // 2:
+        ball_speed[1] = abs(ball_speed[1])
+    if ball_position[1] > HEIGHT - BALL_SIZE // 2:
+        ball_speed[1] = -abs(ball_speed[1])
 
+    bat_min = ball_position[1] - BALL_SIZE / 2 - BAT_LENGTH / 2
+    bat_max = ball_position[1] + BALL_SIZE / 2 + BAT_LENGTH / 2
+    # hit ball left
+    if ball_position[0] < BAT_THICKNESS + BALL_SIZE / 2:
+        if bat_min < bat_position[0] < bat_max:
+            ball_speed[0] = abs(ball_speed[0])
+        else:
+            score[1] += 1
+            reset()
+    # hit ball right
+    if ball_position[0] > WIDTH - (BAT_THICKNESS + BALL_SIZE / 2):
+        if bat_min < bat_position[1] < bat_max:
+            ball_speed[0] = -abs(ball_speed[0])
+        else:
+            score[0] += 1
+            reset()
+
+
+
+import random
+def reset():
+    "ball at the beggining starting in the middle in random direction"
+    ball_position[0] = WIDTH // 2
+    ball_position[1] = HEIGHT // 2
+    # x speed: right / left
+    if random.randint(0, 1):
+        ball_speed[0] = SPEED
+    else:
+        ball_speed[0] = -SPEED
+    # y speed is random
+    ball_speed[1] = random.uniform(-1, 1) * SPEED
+    
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 window.push_handlers(
@@ -131,4 +172,5 @@ window.push_handlers(
     on_key_release=release_key,
 )
 pyglet.clock.schedule(restore)
+reset()
 pyglet.app.run()  # everything set to start the game
