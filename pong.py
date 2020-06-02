@@ -59,6 +59,31 @@ def draw():
             y + LINE_LENGTH,
         )
 
+    draw_text(
+        str(score[0]),
+        TEXT_INDENT,
+        HEIGHT - TEXT_INDENT - FONT_SIZE,
+        'left',
+    )
+
+    draw_text(
+        str(score[1]),
+        WIDTH - TEXT_INDENT,
+        HEIGHT - TEXT_INDENT - FONT_SIZE,
+        'right',
+    )
+    
+def draw_text(text, x, y, position_x):
+    '''Draw given text on given position
+    position_x argument can be 'left' or 'right'
+    '''    
+    score_label = pyglet.text.Label(
+        text,
+        font_size = FONT_SIZE,
+        x=x, y=y, anchor_x=position_x
+    )
+    score_label.draw()
+
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 window.push_handlers(
     on_draw=draw,  # to draw the window use the function 'draw'
