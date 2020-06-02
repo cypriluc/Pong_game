@@ -43,6 +43,21 @@ def draw():
         ball_position[0] + BALL_SIZE // 2,
         ball_position[1] + BALL_SIZE // 2,
     )
+    for x, y in [(0, bat_position[0]), (WIDTH, bat_position[1])]:
+        create_rectangle(
+            x - BAT_THICKNESS,
+            y - BAT_LENGTH // 2,
+            x + BAT_THICKNESS,
+            y + BAT_LENGTH // 2,
+        )
+
+    for y in range (LINE_LENGTH // 2, HEIGHT, LINE_LENGTH * 2):
+        create_rectangle(
+            WIDTH // 2 - 0.5,
+            y,
+            WIDTH // 2 + 0.5,
+            y + LINE_LENGTH,
+        )
 
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 window.push_handlers(
