@@ -37,12 +37,14 @@ def draw():
     "Draw game status"
     gl.glClear(gl.GL_COLOR_BUFFER_BIT)  # delete window content, black background
     gl.glColor3f(1, 1, 1)  # set drawing color to white
+    # draw ball 
     create_rectangle(
         ball_position[0] - BALL_SIZE // 2, 
         ball_position[1] - BALL_SIZE // 2,  
         ball_position[0] + BALL_SIZE // 2,
         ball_position[1] + BALL_SIZE // 2,
     )
+    # draw bats
     for x, y in [(0, bat_position[0]), (WIDTH, bat_position[1])]:
         create_rectangle(
             x - BAT_THICKNESS,
@@ -50,7 +52,7 @@ def draw():
             x + BAT_THICKNESS,
             y + BAT_LENGTH // 2,
         )
-
+    # draw centre division line
     for y in range (LINE_LENGTH // 2, HEIGHT, LINE_LENGTH * 2):
         create_rectangle(
             WIDTH // 2 - 0.5,
@@ -58,14 +60,13 @@ def draw():
             WIDTH // 2 + 0.5,
             y + LINE_LENGTH,
         )
-
+    # draw score
     draw_text(
         str(score[0]),
         TEXT_INDENT,
         HEIGHT - TEXT_INDENT - FONT_SIZE,
         'left',
     )
-
     draw_text(
         str(score[1]),
         WIDTH - TEXT_INDENT,
@@ -84,8 +85,50 @@ def draw_text(text, x, y, position_x):
     )
     score_label.draw()
 
+from pyglet.window import key
+
+def press_key(symbol, modificator):
+    "adds key to pressed_keys set"
+    if symbol == key.W:
+        pressed_keys.add(('up', 0))
+    if symbol == key.S:
+        pressed_keys.add(('down', 0))
+    if symbol == key.UP:
+        pressed_keys.add(('up', 1))
+    if symbol == key.DOWN:
+        pressed_keys.add(('down', 1))
+
+def release_key(symbol, modificator):
+    "removes key from pressed_keys set"
+    if symbol == key.W:
+        pressed_keys.discard(('up', 0))
+    if symbol == key.S:
+        pressed_keys.discard(('down', 0))
+    if symbol == key.UP:
+        pressed_keys.discard(('up', 1))
+    if symbol == key.DOWN:
+        pressed_keys.discard(('down', 1))
+
+def restore(dt):
+    for bat_number in (0, 1):
+        # move according keys
+        if ('up', bat_number) in pressed_keys:
+            bat_position[bat_number] += BAT_SPEED * dt
+        if ('down', bat_number) in pressed_keys:
+            bat_position[bat_number] -= BAT_SPEED * dt                
+        # bottom limit
+        if bat_position[bat_number] < BAT_LENGTH / 2:
+            bat_position[bat_number] = BAT_LENGTH /2
+        # top limit
+        if bat_position[bat_number] > HEIGHT - BAT_LENGTH /2:
+            bat_position[bat_number] = HEIGHT - BAT_LENGTH / 2
+
+
 window = pyglet.window.Window(width=WIDTH, height=HEIGHT)
 window.push_handlers(
     on_draw=draw,  # to draw the window use the function 'draw'
+    on_key_press=press_key,
+    on_key_release=release_key,
 )
+pyglet.clock.schedule(restore)
 pyglet.app.run()  # everything set to start the game
