@@ -6,7 +6,7 @@ HEIGHT = 600
 BALL_SIZE = 20
 BAT_THICKNESS = 10
 BAT_LENGTH = 100
-SPEED = 200 # px/s
+SPEED = 350 # px/s
 BAT_SPEED = SPEED * 1.5
     # Playing field
 LINE_LENGTH = 20
